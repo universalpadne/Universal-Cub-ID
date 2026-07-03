@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Universal Club ID Generator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 30px;
+      display: flex;
+      gap: 40px;
+    }
+    .form-container {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; color: #333;}
+    input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #006b52; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #004d3b; }
+
+    /* PREVIEW CONTAINER */
+    .id-card-wrapper { background: #ddd; padding: 20px; border-radius: 8px; display: flex; align-items: center; }
+    
+    /* Exact CR80 Landscape Dimensions (scaled for 300 DPI layout matching your image) */
+    #id-card {
+      width: 500px;
+      height: 315px;
+      background: #fdfdfd;
+      overflow: hidden;
+      position: relative;
+      box-sizing: border-box;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    /* TOP HEADER */
+    .header-bar {
+      height: 70px;
+      background: linear-gradient(135deg, #111111 75%, #00a877 75%);
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      position: relative;
+    }
+    .header-logo { width: 45px; height: 45px; margin-right: 12px; object-fit: contain; }
+    .header-text h1 { margin: 0; font-size: 24px; font-family: 'Times New Roman', serif; letter-spacing: 1px; font-weight: bold; }
+    .header-text p { margin: 2px 0 0 0; font-size: 13px; font-style: italic; color: #ccc; }
+    
+    /* BACKGROUND WATERMARK / ACCENTS */
+    .watermark {
+      position: absolute;
+      top: 55%;
+      left: 60%;
+      transform: translate(-50%, -50%);
+      width: 250px;
+      opacity: 0.04;
+      pointer-events: none;
+    }
+    .bottom-accent {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 130px;
+      height: 30px;
+      background: #00a877;
+      border-top-right-radius: 35px;
+    }
+    .bottom-black-bar {
+      position: absolute;
+      bottom: 0;
+      left: 130px;
+      right: 0;
+      height: 12px;
+      background: #111;
+    }
+
+    /* CARD CONTENT */
+    .card-body { display: flex; padding: 20px 15px; gap: 20px; }
+    
+    /* PHOTO FRAME */
+    .photo-frame {
+      width: 125px;
+      height: 165px;
+      border: 3px solid #004d3b;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+    .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* TEXT FIELDS */
+    .info-fields { display: flex; flex-direction: column; gap: 4px; color: #000; font-size: 14px; line-height: 1.3; }
+    .member-name { font-size: 21px; font-weight: bold; color: #004d3b; margin-bottom: 4px; font-family: 'Times New Roman', serif; }
+    .bold-label { font-weight: bold; }
+    .mobile-field { color: #002b80; font-weight: bold; margin-top: 4px; }
+    .blood-field { color: #cc0000; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <!-- INPUT FORM -->
+  <div class="form-container">
+    <h2 style="color: #004d3b; margin-top:0;">Card Generator Data</h2>
+    
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="inName" value="Muhammed Sharief BS" oninput="renderCard()">
+    </div>
+    <div class="form-group">
+      <label>S/o (Father's Name)</label>
+      <input type="text" id="inFather" value="Muhammed kunhi K" oninput="renderCard()">
+    </div>
+    <div class="form-group">
+      <label>House Name / Locality</label>
+      <input type="text" id="inHouse" value="BS House Kovvel" oninput="renderCard()">
+    </div>
+    <div class="form-group">
+      <label>P.O & Place</label>
+      <input type="text" id="inPO" value="P.O Padne kasargod, Kerala 671312" oninput="renderCard()">
+    </div>
+    <div class="form-group">
+      <label>Mobile Number</label>
+      <input type="text" id="inMob" value="9895 107 542" oninput="renderCard()">
+    </div>
+    <div class="form-group">
+      <label>Blood Group</label>
+      <input type="text" id="inBlood" value="O+Ve" oninput="renderCard()">
+    </div>
+    <div class="form-group">
+      <label>Member Photo</label>
+      <input type="file" accept="image/*" onchange="uploadImage(event)">
+    </div>
+    
+    <button onclick="exportToPDF()">Download Member PDF</button>
+  </div>
+
+  <!-- GRAPHIC PROTOTYPE PREVIEW -->
+  <div class="id-card-wrapper">
+    <div id="id-card">
+      <div class="header-bar">
+        <!-- Using a default icon placeholder for the green/blue logo crest -->
+        <img class="header-logo" id="logoCrest" src="https://cdn-icons-png.flaticon.com/512/1041/1041168.png" alt="Logo">
+        <div class="header-text">
+          <h1>UNIVERSAL</h1>
+          <p>Arts & sports club, Padne</p>
+        </div>
+      </div>
+      
+      <!-- Faint background watermark style -->
+      <img class="watermark" src="https://cdn-icons-png.flaticon.com/512/1041/1041168.png" alt="Watermark">
+
+      <div class="card-body">
+        <div class="photo-frame">
+          <img id="displayPhoto" src="https://via.placeholder.com/125x165?text=No+Photo" alt="Member">
+        </div>
+        
+        <div class="info-fields">
+          <div class="member-name" id="lblName">Muhammed Sharief BS</div>
+          <div><span class="bold-label">S/o</span> <span id="lblFather">Muhammed kunhi K</span></div>
+          <div id="lblHouse">BS House Kovvel</div>
+          <div id="lblPO">P.O Padne kasargod, Kerala 671312</div>
+          <div class="mobile-field">MOB: <span id="lblMob">9895 107 542</span></div>
+          <div class="blood-field">BLOOD - <span id="lblBlood">O+Ve</span></div>
+        </div>
+      </div>
+
+      <!-- Footer Decorative Banners matching your artwork -->
+      <div class="bottom-accent"></div>
+      <div class="bottom-black-bar"></div>
+    </div>
+  </div>
+
+  <script>
+    function renderCard() {
+      document.getElementById('lblName').innerText = document.getElementById('inName').value;
+      document.getElementById('lblFather').innerText = document.getElementById('inFather').value;
+      document.getElementById('lblHouse').innerText = document.getElementById('inHouse').value;
+      document.getElementById('lblPO').innerText = document.getElementById('inPO').value;
+      document.getElementById('lblMob').innerText = document.getElementById('inMob').value;
+      document.getElementById('lblBlood').innerText = document.getElementById('inBlood').value;
+    }
+
+    function uploadImage(event) {
+      const reader = new FileReader();
+      reader.onload = function() {
+        document.getElementById('displayPhoto').src = reader.result;
+      }
+      if(event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    }
+
+    function exportToPDF() {
+      const element = document.getElementById('id-card');
+      const filenameStr = document.getElementById('inName').value.replace(/\s+/g, '_');
+      
+      const config = {
+        margin: 0,
+        filename: `Universal_ID_${filenameStr}.pdf`,
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: { scale: 4, useCORS: true }, // Extra sharp text generation
+        jsPDF: { unit: 'in', format: [5.3, 3.4], orientation: 'landscape' } // Crisp wallet-card size conversion
+      };
+
+      html2pdf().set(config).from(element).save();
+    }
+    
+    renderCard();
+  </script>
+</body>
+</html>
